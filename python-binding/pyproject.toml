@@ -1,0 +1,194 @@
+[build-system]
+requires = [
+    "setuptools>=61.0",
+    "wheel",
+    "pybind11>=2.10.0",
+    "cmake>=3.18",
+    "ninja; platform_system!='Windows'",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "psdk"
+version = "1.0.0"
+description = "Python binding for DJI Payload SDK"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "DJI SDK Team", email = "dev@dji.com"},
+]
+maintainers = [
+    {name = "DJI SDK Team", email = "dev@dji.com"},
+]
+keywords = ["dji", "drone", "payload", "sdk", "robotics"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8", 
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: C++",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: System :: Hardware :: Hardware Drivers",
+]
+requires-python = ">=3.7"
+dependencies = [
+    "numpy>=1.19.0",
+    "typing-extensions>=4.0.0; python_version<'3.8'",
+]
+
+[project.optional-dependencies]
+# 开发依赖
+dev = [
+    "pytest>=6.0",
+    "pytest-cov>=2.0",
+    "pytest-asyncio>=0.18.0",
+    "black>=22.0",
+    "isort>=5.0",
+    "flake8>=4.0",
+    "mypy>=0.950",
+    "pre-commit>=2.0",
+]
+
+# 文档依赖
+docs = [
+    "sphinx>=4.0",
+    "sphinx-rtd-theme>=1.0",
+    "myst-parser>=0.17",
+    "sphinx-autodoc-typehints>=1.12",
+]
+
+# 示例依赖
+examples = [
+    "opencv-python>=4.5.0",
+    "matplotlib>=3.3.0",
+    "pillow>=8.0.0",
+    "asyncio-mqtt>=0.11.0; python_version>='3.7'",
+]
+
+# 完整安装
+full = [
+    "psdk[dev,docs,examples]",
+]
+
+[project.urls]
+Homepage = "https://github.com/dji-sdk/Payload-SDK"
+Documentation = "https://developer.dji.com/payload-sdk/"
+Repository = "https://github.com/dji-sdk/Payload-SDK"
+"Bug Tracker" = "https://github.com/dji-sdk/Payload-SDK/issues"
+Changelog = "https://github.com/dji-sdk/Payload-SDK/blob/master/CHANGELOG.md"
+
+[project.scripts]
+psdk-info = "psdk.utils.cli:info_command"
+psdk-test = "psdk.utils.cli:test_command"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["psdk*"]
+exclude = ["tests*", "examples*", "docs*"]
+
+[tool.setuptools.package-data]
+psdk = ["*.so", "*.dll", "*.dylib", "py.typed"]
+
+# 黑色代码格式化配置
+[tool.black]
+line-length = 88
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # 排除构建目录
+  build/
+  | dist/
+  | \.eggs/
+  | \.git/
+  | \.venv/
+  | venv/
+)/
+'''
+
+# isort导入排序配置
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["psdk"]
+
+# mypy类型检查配置
+[tool.mypy]
+python_version = "3.7"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "cv2.*",
+    "matplotlib.*",
+    "numpy.*",
+]
+ignore_missing_imports = true
+
+# pytest配置
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=psdk",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "hardware: marks tests that require hardware connection",
+]
+
+# 覆盖率配置
+[tool.coverage.run]
+source = ["psdk"]
+omit = [
+    "*/tests/*",
+    "*/examples/*",
+    "setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

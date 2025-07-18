@@ -1,0 +1,11 @@
+# DJI PSDK Python Binding - 核心依赖
+# 这些是运行时必需的依赖包
+
+# 核心绑定库
+pybind11>=2.10.0
+
+# 数值计算
+numpy>=1.19.0
+
+# Python 3.7 兼容性
+typing-extensions>=4.0.0; python_version<"3.8"
